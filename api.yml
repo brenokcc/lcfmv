@@ -1,0 +1,146 @@
+api:
+  app: true
+  lang: pt-br
+  title: Legislação CFMV
+  subtitle: Conselho Federal de Medicina Venterinária
+  icon: /static/images/cobra.svg
+  logo: /static/images/cfmv.png
+  footer:
+    version: 1.0.1
+  oauth:
+    suap:
+      name: SUAP
+      client_id: 8v5c0USoi6JatNOCfcti8im1elMfmp7BNHOGEcIZ
+      client_secret: $SUAP_SECRET_KEY
+      redirect_uri: /api/v1/login/
+      authorize_url: https://suap.ifrn.edu.br/o/authorize/
+      access_token_url: https://suap.ifrn.edu.br/o/token/
+      user_data_url: https://suap.ifrn.edu.br/api/eu/
+      user_logout_url:
+      user_scope:
+      user_data:
+        create: true
+        username: email
+        email: email
+  theme:
+    primary: 4e9a7d
+    secondary: 006940
+    auxiliary: 808083
+    highlight: 006940
+    info: cae5c3
+    success: 006940
+    warning: fff5c2
+    danger: e52207
+    radius: 5px
+  dashboard: api.actions.dashboard
+  index: lcfmv.actions.index
+  groups:
+    adm: Administrador
+    opl: Operador de Legislação
+    opa: Operador de Acordão
+  models:
+    auth.user:
+      prefix: users
+      icon: user-pen
+      entrypoint: shortcut
+      search: username
+      filters: date_joined__gte, is_superuser, username
+      ordering: username
+      requires:
+        adm:
+      relations:
+        api.actions.userroles:
+          fields: id, name, scope, model, value, active
+          actions: view
+      endpoints:
+        add:
+          fields: first_name, last_name, username
+        edit:
+          fields: first_name, last_name, username, is_superuser
+        list:
+          fields: id, username, email, api.actions.userroles
+          actions: add, view, edit, delete, api.actions.changepassword, api.actions.changepasswords, lcfmv.actions.definirpapeis
+        view:
+          fields: id, username, email, api.actions.userroles
+          actions: api.actions.verifypassword, api.actions.changepassword
+    api.role:
+      prefix: roles
+      endpoints:
+        list:
+          fields: id, name
+          actions: view, edit
+    lcfmv.estado:
+      requires:
+        adm:
+    lcfmv.tipolegislacao:
+      icon: list
+      requires:
+        adm:
+      endpoints:
+        list:
+          requires:
+            adm:
+            opl:
+    lcfmv.conselho:
+      icon: building
+      requires:
+        adm:
+    lcfmv.legislacao:
+      icon: file-contract
+      requires:
+        adm:
+        opl:
+      fieldsets:
+        dados_gerais: numero, ano, data
+        detalhamento: ementa, conteudo, get_arquivo
+        publicacao: data_dou, secao_dou, pagina_dou
+      endpoints:
+        list:
+          actions: add, view, edit, delete, lcfmv.actions.revogarlegislacao
+          fields: get_descricao, ementa, get_arquivo
+          subsets: virgentes, revogadas
+        view:
+          fields: dados_gerais, detalhamento, publicacao
+          requires:
+        add:
+          fieldsets:
+            dados_gerais:
+              numero, ano, data, tipo
+            detalhamento:
+              ementa, conteudo, arquivo
+            publicacao:
+              data_dou, secao_dou, pagina_dou
+        edit:
+          fieldsets:
+            dados_gerais:
+              numero, ano, data, tipo
+            detalhamento:
+              ementa, conteudo, arquivo
+            publicacao:
+              data_dou, secao_dou, pagina_dou
+    lcfmv.acordao:
+      icon: file-signature
+      requires:
+        adm:
+        opa:
+      fieldsets:
+        dados_gerais: numero, ano, data
+        detalhamento: ementa, conteudo, get_arquivo
+      endpoints:
+        list:
+          fields: get_descricao, ementa, get_arquivo
+        view:
+          fields: dados_gerais, detalhamento
+          requires:
+        add:
+          fieldsets:
+            dados_gerais:
+              numero, ano, data
+            detalhamento:
+              ementa, conteudo, arquivo
+        edit:
+          fieldsets:
+            dados_gerais:
+              numero, ano, data
+            detalhamento:
+              ementa, conteudo, arquivo
