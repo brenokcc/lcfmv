@@ -84,7 +84,7 @@ class Acordao(models.Model):
         return 'Acordão {} de {}'.format(self.numero, self.data.strftime('%d/%m/%Y'))
 
     def get_arquivo(self):
-        return Link(self.arquivo.url, target='_blank', icon='file-pdf')
+        return Link(self.arquivo.url, target='_blank', icon='file-pdf') if self.arquivo else None
 
 
 class LegislacaoManager(models.QuerySet):
