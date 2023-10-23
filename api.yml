@@ -3,7 +3,7 @@ api:
   lang: pt-br
   title: Legislação CFMV
   subtitle: Conselho Federal de Medicina Venterinária
-  icon: /static/images/cobra.svg
+  icon: /static/images/logo2.png
   logo: /static/images/cfmv.png
   footer:
     version: 1.0.1
