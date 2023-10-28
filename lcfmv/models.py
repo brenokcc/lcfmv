@@ -56,32 +56,58 @@ class Conselho(models.Model):
         return '{} - {}'.format(self.sigla, self.nome)
 
 
+class RelatorManager(models.Manager):
+    pass
+
+
+class Relator(models.Model):
+    nome = models.CharField('Nome', max_length=255)
+    numero_crmv = models.CharField('Nº CRMV', max_length=25)
+    classe = models.CharField('Classe', max_length=100, choices=[
+        ['V', 'Médico-Veterinário'], ['Z', 'Zootecnista'],
+    ])
+    conselho = models.ForeignKey(Conselho, verbose_name='Conselho', on_delete=models.CASCADE)
+
+    objects = RelatorManager()
+
+    class Meta:
+        verbose_name = 'Relator'
+        verbose_name_plural = 'Relatores'
+
+    def __str__(self):
+        return '{} ({})'.format(self.nome, self.numero_crmv)
+
+
 class AcordaoManager(models.Manager):
     pass
 
 
 class Acordao(models.Model):
+
+    ORGAO_JULGADOR_CHOICES = [['Plenário', 'Plenário'], ['Primeira Turma', 'Primeira Turma'], ['Segunda Turma', 'Segunda Turma']]
+    NATUREZA_CHOICES = [['Processo Administrativo', 'Processo Administrativo'], ['Processo Ético-Profissional', 'Processo Ético-Profissional']]
+
     numero = models.CharField('Número', max_length=255)
     ano = models.IntegerField('Ano')
-    data = models.DateField('Data')
+    data_dou = models.DateField('Data de Publicação no DOU', null=True)
+    orgao_julgador = models.CharField('Órgão Julgador', max_length=100, null=True, choices=ORGAO_JULGADOR_CHOICES)
+    natureza = models.CharField('Natureza', max_length=100, null=True, choices=NATUREZA_CHOICES)
     ementa = models.TextField('Ementa')
     conteudo = models.TextField('Conteúdo')
     arquivo = models.FileField('Arquivo', upload_to='acordao', null=True, blank=True)
-    data_inclusao = models.DateField('Data de Inclusão', auto_now_add=True)
     processo = models.CharField('Processo', max_length=255)
-    relator = models.CharField('Relator', max_length=255)
 
     objects = AcordaoManager()
 
     class Meta:
-        verbose_name = 'Acordão'
-        verbose_name_plural = 'Acordãos'
+        verbose_name = 'Acórdão'
+        verbose_name_plural = 'Acórdãos'
 
     def __str__(self):
         return self.get_descricao()
 
     def get_descricao(self):
-        return 'Acordão {} de {}'.format(self.numero, self.data.strftime('%d/%m/%Y'))
+        return 'Acordão {} de {}'.format(self.numero, self.ano)
 
     def get_arquivo(self):
         try:
@@ -100,19 +126,20 @@ class LegislacaoManager(models.QuerySet):
 
 class Legislacao(models.Model):
     numero = models.CharField('Número', max_length=255)
-    ano = models.IntegerField('Ano')
+    ano = models.IntegerField('Ano', null=True)
     tipo = models.ForeignKey(TipoLegislacao, verbose_name='Tipo', null=True, on_delete=models.CASCADE)
     data = models.DateField('Data')
     ementa = models.TextField('Ementa')
     conteudo = models.TextField('Conteúdo')
     arquivo = models.FileField('Arquivo', upload_to='acordao', null=True, blank=True)
-    data_inclusao = models.DateField('Data de Inclusão', auto_now_add=True)
 
-    data_dou = models.DateField('Data de Publicação')
+    data_dou = models.DateField('Data de Publicação', null=True)
     secao_dou = models.CharField('Seção da Publicação', max_length=100)
     pagina_dou = models.CharField('Página da Publicação', max_length=100)
 
     revogada_por = models.ForeignKey('lcfmv.legislacao', verbose_name='Revogada Por', null=True, blank=True, on_delete=models.CASCADE)
+
+    codigo = models.IntegerField('Código', null=True)
 
     objects = LegislacaoManager().as_manager()
 

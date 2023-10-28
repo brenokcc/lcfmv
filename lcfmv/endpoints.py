@@ -13,6 +13,7 @@ class AcessoRapido(endpoints.Endpoint):
             boxes.append(icon='list', label='Tipos de Legislação', url='/api/v1/tipolegislacao/')
         if self.check_roles('adm'):
             boxes.append(icon='building', label='Conselhos', url='/api/v1/conselho/')
+            boxes.append(icon='users', label='Relatores', url='/api/v1/relator/')
         if self.check_roles('adm', 'opl'):
             boxes.append(icon='file-contract', label='Legislações', url='/api/v1/legislacao/')
         if self.check_roles('adm', 'opa'):
@@ -45,24 +46,35 @@ class Consultar(endpoints.Endpoint):
     tipo_documento = endpoints.ChoiceField(
         label='Tipo de Documento', choices=[
             ['legislacao', 'Legislação'],
-            ['acordao', 'Acordão'],
+            ['acordao', 'Acórdão'],
         ], pick=True, initial='legislacao'
     )
     tipo_legislacao = endpoints.RelatedField(queryset=TipoLegislacao.objects, label='Tipo de Legislação', required=False, pick=True, help_text='Não informar caso deseje buscar em todos os tipos.')
+    orgao_julgador = endpoints.ChoiceField(label='Órgão Julgador', choices=Acordao.ORGAO_JULGADOR_CHOICES, required=False, pick=True, help_text='Não informar caso deseje buscar em todos os órgãos.')
+    natureza = endpoints.ChoiceField(label='Natureza', choices=Acordao.NATUREZA_CHOICES, required=False, pick=True, help_text='Não informar caso deseje buscar em todos as naturezas.')
     palavas_chaves = endpoints.CharField(label='Palavras-chaves', required=True)
     criterio_busca = endpoints.ChoiceField(
         label='Critério da Busca', choices=[
             ['toda', 'Contendo todas palavras'],
             ['qualquer', 'Contendo qualquer uma das palavras'],
-            ['exato', 'Cotendo a expressão exata'],
+            ['exato', 'Contendo a expressão exata'],
         ], pick=True, initial='toda'
     )
-    escopo_busca = endpoints.MultipleChoiceField(
+    escopo_busca_legislacao = endpoints.MultipleChoiceField(
         label='Escopo da Busca', choices=[
             ['numero', 'Número'],
             ['ementa', 'Ementa'],
             ['conteudo', 'Conteúdo'],
-        ], pick=True, initial=['numero', 'ementa', 'conteudo']
+        ], pick=True, initial=['conteudo']
+    )
+    escopo_busca_acordao = endpoints.MultipleChoiceField(
+        label='Escopo da Busca', choices=[
+            ['numero', 'Número'],
+            ['ano', 'Ano'],
+            ['ementa', 'Ementa'],
+            ['conteudo', 'Conteúdo'],
+            ['orgao_julgador', 'Órgão Julgador'],
+        ], pick=True, initial=['conteudo']
     )
 
     class Meta:
@@ -70,24 +82,38 @@ class Consultar(endpoints.Endpoint):
         title = 'Consulta Pública'
         help_text = 'Busque pelas legislações/acordãos cadastradros no sistema através de uma ou mais palavras-chaves.'
 
+    def load(self):
+        self.disable('escopo_busca_acordao', 'orgao_julgador', 'natureza')
+
     def on_tipo_documento_change(self, tipo_documento=None, **kwargs):
-        self.enable('tipo_legislacao') if tipo_documento == 'legislacao' else self.disable('tipo_legislacao')
-        self.setdata(palavas_chaves='TESTE :)')
+        if tipo_documento == 'legislacao':
+            self.enable('tipo_legislacao', 'escopo_busca_legislacao')
+            self.disable('escopo_busca_acordao', 'orgao_julgador', 'natureza')
+        else:
+            self.disable('tipo_legislacao', 'escopo_busca_legislacao')
+            self.enable('escopo_busca_acordao', 'orgao_julgador', 'natureza')
 
     def check_permission(self):
         return True
 
     def get(self):
-        tipo_legislacao = self.getdata('tipo_legislacao')
         palavas_chaves = self.getdata('palavas_chaves')
         criterio_busca = self.getdata('criterio_busca')
-        escopo_busca = self.getdata('escopo_busca')
-        if self.validated_data.userdata('tipo_documento') == 'legislacao':
+        if self.getdata('tipo_documento') == 'legislacao':
+            escopo_busca = self.getdata('escopo_busca_legislacao')
+            tipo_legislacao = self.getdata('tipo_legislacao')
             qs = Legislacao.objects
             if tipo_legislacao:
                 qs = qs.filter(tipo=tipo_legislacao)
         else:
+            escopo_busca = self.getdata('escopo_busca_acordao')
+            orgao_julgador = self.getdata('orgao_julgador')
+            natureza = self.getdata('natureza')
             qs = Acordao.objects
+            if orgao_julgador:
+                qs = qs.filter(orgao_julgador=orgao_julgador)
+            if natureza:
+                qs = qs.filter(natureza=natureza)
         resultado = qs.none()
         if criterio_busca == 'toda':
             for campo in escopo_busca:

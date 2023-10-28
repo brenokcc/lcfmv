@@ -2,7 +2,7 @@ api:
   app: true
   lang: pt-br
   title: Legislação CFMV
-  subtitle: Conselho Federal de Medicina Venterinária
+  subtitle: Conselho Federal de Medicina Veterinária
   icon: /static/images/logo2.png
   logo: /static/images/cfmv.png
   footer:
@@ -118,13 +118,15 @@ api:
               ementa, conteudo, arquivo
             publicacao:
               data_dou, secao_dou, pagina_dou
+    lcfmv.relator:
+      icon: users
     lcfmv.acordao:
       icon: file-signature
       requires:
         adm:
         opa:
       fieldsets:
-        dados_gerais: numero, ano, data
+        dados_gerais: numero, ano, data_dou, orgao_julgador, natureza
         detalhamento: ementa, conteudo, get_arquivo
       endpoints:
         list:
@@ -135,12 +137,12 @@ api:
         add:
           fieldsets:
             dados_gerais:
-              numero, ano, data
+              numero, ano, data_dou, orgao_julgador, natureza
             detalhamento:
               ementa, conteudo, arquivo
         edit:
           fieldsets:
             dados_gerais:
-              numero, ano, data
+              numero, ano, data_dou, orgao_julgador, natureza
             detalhamento:
               ementa, conteudo, arquivo
