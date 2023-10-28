@@ -7,3 +7,4 @@ geckodriver.log
 .docker
 media
 local_settings.py
+.deploy

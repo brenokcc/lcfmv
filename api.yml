@@ -32,8 +32,8 @@ api:
     warning: fff5c2
     danger: e52207
     radius: 5px
-  dashboard: api.actions.dashboard
-  index: lcfmv.actions.index
+  dashboard: api.endpoints.dashboard
+  index: lcfmv.endpoints.index
   groups:
     adm: Administrador
     opl: Operador de Legislação
@@ -49,7 +49,7 @@ api:
       requires:
         adm:
       relations:
-        api.actions.userroles:
+        api.endpoints.userroles:
           fields: id, name, scope, model, value, active
           actions: view
       endpoints:
@@ -58,11 +58,11 @@ api:
         edit:
           fields: first_name, last_name, username, is_superuser
         list:
-          fields: id, username, email, api.actions.userroles
-          actions: add, view, edit, delete, api.actions.changepassword, api.actions.changepasswords, lcfmv.actions.definirpapeis
+          fields: id, username, email, api.endpoints.userroles
+          actions: add, view, edit, delete, api.endpoints.changepassword, api.endpoints.changepasswords, lcfmv.endpoints.definirpapeis
         view:
-          fields: id, username, email, api.actions.userroles
-          actions: api.actions.verifypassword, api.actions.changepassword
+          fields: id, username, email, api.endpoints.userroles
+          actions: api.endpoints.verifypassword, api.endpoints.changepassword
     api.role:
       prefix: roles
       endpoints:
@@ -96,7 +96,7 @@ api:
         publicacao: data_dou, secao_dou, pagina_dou
       endpoints:
         list:
-          actions: add, view, edit, delete, lcfmv.actions.revogarlegislacao
+          actions: add, view, edit, delete, lcfmv.endpoints.revogarlegislacao
           fields: get_descricao, ementa, get_arquivo
           subsets: virgentes, revogadas
         view:
