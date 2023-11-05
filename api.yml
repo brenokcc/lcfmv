@@ -90,17 +90,16 @@ api:
       requires:
         adm:
         opl:
-      fieldsets:
-        dados_gerais: numero, ano, data
-        detalhamento: ementa, conteudo, get_arquivo
-        publicacao: data_dou, secao_dou, pagina_dou
       endpoints:
         list:
           actions: add, view, edit, delete, lcfmv.endpoints.revogarlegislacao
           fields: get_descricao, ementa, get_arquivo
           subsets: virgentes, revogadas
         view:
-          fields: dados_gerais, detalhamento, publicacao
+          fieldsets:
+            dados_gerais: numero, ano, data
+            detalhamento: ementa, conteudo, get_arquivo
+            publicacao: data_dou, secao_dou, pagina_dou
           requires:
         add:
           fieldsets:
@@ -125,14 +124,13 @@ api:
       requires:
         adm:
         opa:
-      fieldsets:
-        dados_gerais: numero, ano, data_dou, orgao_julgador, natureza
-        detalhamento: ementa, conteudo, get_arquivo
       endpoints:
         list:
           fields: get_descricao, ementa, get_arquivo
         view:
-          fields: dados_gerais, detalhamento
+          fieldsets:
+            dados_gerais: numero, ano, data_dou, orgao_julgador, natureza
+            detalhamento: ementa, conteudo, get_arquivo
           requires:
         add:
           fieldsets:
