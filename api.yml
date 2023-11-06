@@ -93,32 +93,26 @@ api:
       endpoints:
         list:
           actions: add, view, edit, delete, lcfmv.endpoints.revogarlegislacao
-          fields: get_descricao, ementa, get_arquivo
+          fields: get_descricao, tipo, ementa, get_arquivo
           subsets: virgentes, revogadas
         view:
           fieldsets:
-            dados_gerais: numero, ano, data
+            dados_gerais: numero ano, data tipo
             detalhamento: ementa, conteudo, get_arquivo
-            publicacao: data_dou, secao_dou, pagina_dou
+            publicacao: data_dou secao_dou pagina_dou
           requires:
         add:
           fieldsets:
             dados_gerais:
-              numero, ano, data, tipo
+              numero ano, data tipo
             detalhamento:
               ementa, conteudo, arquivo
             publicacao:
-              data_dou, secao_dou, pagina_dou
-        edit:
-          fieldsets:
-            dados_gerais:
-              numero, ano, data, tipo
-            detalhamento:
-              ementa, conteudo, arquivo
-            publicacao:
-              data_dou, secao_dou, pagina_dou
+              data_dou secao_dou pagina_dou
     lcfmv.relator:
       icon: users
+      requires:
+        adm:
     lcfmv.acordao:
       icon: file-signature
       requires:
@@ -126,21 +120,15 @@ api:
         opa:
       endpoints:
         list:
-          fields: get_descricao, ementa, get_arquivo
+          fields: get_descricao, relator, orgao_julgador, natureza, ementa, get_arquivo
         view:
           fieldsets:
-            dados_gerais: numero, ano, data_dou, orgao_julgador, natureza
+            dados_gerais: numero ano, relator data_dou, orgao_julgador natureza
             detalhamento: ementa, conteudo, get_arquivo
           requires:
         add:
           fieldsets:
             dados_gerais:
-              numero, ano, data_dou, orgao_julgador, natureza
-            detalhamento:
-              ementa, conteudo, arquivo
-        edit:
-          fieldsets:
-            dados_gerais:
-              numero, ano, data_dou, orgao_julgador, natureza
+              numero ano, relator data_dou, orgao_julgador natureza
             detalhamento:
               ementa, conteudo, arquivo

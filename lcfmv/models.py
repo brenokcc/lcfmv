@@ -89,12 +89,13 @@ class Acordao(models.Model):
 
     numero = models.CharField('Número', max_length=255)
     ano = models.IntegerField('Ano')
-    data_dou = models.DateField('Data de Publicação no DOU', null=True)
-    orgao_julgador = models.CharField('Órgão Julgador', max_length=100, null=True, choices=ORGAO_JULGADOR_CHOICES)
-    natureza = models.CharField('Natureza', max_length=100, null=True, choices=NATUREZA_CHOICES)
+    relator = models.ForeignKey(Relator, verbose_name='Relator', on_delete=models.CASCADE)
+    data_dou = models.DateField('Data de Publicação no DOU')
+    orgao_julgador = models.CharField('Órgão Julgador', max_length=100, choices=ORGAO_JULGADOR_CHOICES)
+    natureza = models.CharField('Natureza', max_length=100, choices=NATUREZA_CHOICES)
     ementa = models.TextField('Ementa')
     conteudo = models.TextField('Conteúdo')
-    arquivo = models.FileField('Arquivo', upload_to='acordao', null=True, blank=True)
+    arquivo = models.FileField('Arquivo', upload_to='acordao', blank=False)
     processo = models.CharField('Processo', max_length=255)
 
     objects = AcordaoManager()
@@ -102,6 +103,7 @@ class Acordao(models.Model):
     class Meta:
         verbose_name = 'Acórdão'
         verbose_name_plural = 'Acórdãos'
+        unique_together = [['numero', 'ano', 'natureza', 'orgao_julgador']]
 
     def __str__(self):
         return self.get_descricao()
@@ -126,14 +128,14 @@ class LegislacaoManager(models.QuerySet):
 
 class Legislacao(models.Model):
     numero = models.CharField('Número', max_length=255)
-    ano = models.IntegerField('Ano', null=True)
-    tipo = models.ForeignKey(TipoLegislacao, verbose_name='Tipo', null=True, on_delete=models.CASCADE)
+    ano = models.IntegerField('Ano')
+    tipo = models.ForeignKey(TipoLegislacao, verbose_name='Tipo', on_delete=models.CASCADE)
     data = models.DateField('Data')
     ementa = models.TextField('Ementa')
     conteudo = models.TextField('Conteúdo')
-    arquivo = models.FileField('Arquivo', upload_to='acordao', null=True, blank=True)
+    arquivo = models.FileField('Arquivo', upload_to='acordao', blank=False)
 
-    data_dou = models.DateField('Data de Publicação', null=True)
+    data_dou = models.DateField('Data de Publicação', null=False)
     secao_dou = models.CharField('Seção da Publicação', max_length=100)
     pagina_dou = models.CharField('Página da Publicação', max_length=100)
 
@@ -146,6 +148,7 @@ class Legislacao(models.Model):
     class Meta:
         verbose_name = 'Legislação'
         verbose_name_plural = 'Legislações'
+        unique_together = [['numero', 'ano']]
 
 
     def __str__(self):

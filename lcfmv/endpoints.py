@@ -1,6 +1,6 @@
 from api import endpoints
 from api.components import Boxes, Indicators
-from .models import TipoLegislacao, Legislacao, Acordao
+from .models import TipoLegislacao, Legislacao, Acordao, Relator
 from api.models import Role
 
 
@@ -52,6 +52,7 @@ class Consultar(endpoints.Endpoint):
     tipo_legislacao = endpoints.RelatedField(queryset=TipoLegislacao.objects, label='Tipo de Legislação', required=False, pick=True, help_text='Não informar caso deseje buscar em todos os tipos.')
     orgao_julgador = endpoints.ChoiceField(label='Órgão Julgador', choices=Acordao.ORGAO_JULGADOR_CHOICES, required=False, pick=True, help_text='Não informar caso deseje buscar em todos os órgãos.')
     natureza = endpoints.ChoiceField(label='Natureza', choices=Acordao.NATUREZA_CHOICES, required=False, pick=True, help_text='Não informar caso deseje buscar em todos as naturezas.')
+    relator = endpoints.RelatedField(queryset=Relator.objects, label='Relator', required=False, help_text='Não informar caso deseje buscar por todos os relatores.')
     palavas_chaves = endpoints.CharField(label='Palavras-chaves', required=True)
     criterio_busca = endpoints.ChoiceField(
         label='Critério da Busca', choices=[
@@ -83,15 +84,15 @@ class Consultar(endpoints.Endpoint):
         help_text = 'Busque pelas legislações/acordãos cadastradros no sistema através de uma ou mais palavras-chaves.'
 
     def load(self):
-        self.disable('escopo_busca_acordao', 'orgao_julgador', 'natureza')
+        self.disable('escopo_busca_acordao', 'orgao_julgador', 'natureza', 'relator')
 
     def on_tipo_documento_change(self, tipo_documento=None, **kwargs):
         if tipo_documento == 'legislacao':
             self.enable('tipo_legislacao', 'escopo_busca_legislacao')
-            self.disable('escopo_busca_acordao', 'orgao_julgador', 'natureza')
+            self.disable('escopo_busca_acordao', 'orgao_julgador', 'natureza', 'relator')
         else:
             self.disable('tipo_legislacao', 'escopo_busca_legislacao')
-            self.enable('escopo_busca_acordao', 'orgao_julgador', 'natureza')
+            self.enable('escopo_busca_acordao', 'orgao_julgador', 'natureza', 'relator')
 
     def check_permission(self):
         return True
@@ -109,11 +110,14 @@ class Consultar(endpoints.Endpoint):
             escopo_busca = self.getdata('escopo_busca_acordao')
             orgao_julgador = self.getdata('orgao_julgador')
             natureza = self.getdata('natureza')
+            relator = self.getdata('relator')
             qs = Acordao.objects
             if orgao_julgador:
                 qs = qs.filter(orgao_julgador=orgao_julgador)
             if natureza:
                 qs = qs.filter(natureza=natureza)
+            if relator:
+                qs = qs.filter(relator=relator)
         resultado = qs.none()
         if criterio_busca == 'toda':
             for campo in escopo_busca:
