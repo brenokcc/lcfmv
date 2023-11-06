@@ -148,7 +148,7 @@ class Legislacao(models.Model):
     class Meta:
         verbose_name = 'Legislação'
         verbose_name_plural = 'Legislações'
-        unique_together = [['numero', 'ano']]
+        unique_together = [['numero', 'ano', 'tipo']]
 
 
     def __str__(self):
