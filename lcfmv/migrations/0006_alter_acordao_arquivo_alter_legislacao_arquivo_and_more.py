@@ -26,6 +26,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterUniqueTogether(
             name='legislacao',
-            unique_together={('numero', 'ano')},
+            unique_together={('numero', 'ano', 'tipo')},
         ),
     ]
