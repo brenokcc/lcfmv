@@ -3,8 +3,8 @@ api:
   lang: pt-br
   title: Legislação CFMV
   subtitle: Conselho Federal de Medicina Veterinária
-  icon: /static/images/logo2.png
-  logo: /static/images/cfmv.png
+  icon: /api/static/images/logo2.png
+  logo: /api/static/images/cfmv.png
   footer:
     version: 1.0.1
   oauth:
@@ -12,7 +12,7 @@ api:
       name: SUAP
       client_id: 8v5c0USoi6JatNOCfcti8im1elMfmp7BNHOGEcIZ
       client_secret: $SUAP_SECRET_KEY
-      redirect_uri: /api/login/
+      redirect_uri: /app/login/
       authorize_url: https://suap.ifrn.edu.br/o/authorize/
       access_token_url: https://suap.ifrn.edu.br/o/token/
       user_data_url: https://suap.ifrn.edu.br/api/eu/
@@ -39,6 +39,11 @@ api:
     opl: Operador de Legislação
     opa: Operador de Acordão
   models:
+    api.pushsubscription:
+      endpoints:
+        list:
+          fields: user, device
+          actions: api.endpoints.pushnotification, delete
     auth.user:
       prefix: users
       icon: user-pen
