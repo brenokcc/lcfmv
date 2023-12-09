@@ -12,7 +12,7 @@ api:
       name: SUAP
       client_id: 8v5c0USoi6JatNOCfcti8im1elMfmp7BNHOGEcIZ
       client_secret: $SUAP_SECRET_KEY
-      redirect_uri: /api/v1/login/
+      redirect_uri: /api/login/
       authorize_url: https://suap.ifrn.edu.br/o/authorize/
       access_token_url: https://suap.ifrn.edu.br/o/token/
       user_data_url: https://suap.ifrn.edu.br/api/eu/
@@ -94,7 +94,9 @@ api:
         list:
           actions: add, view, edit, delete, lcfmv.endpoints.revogarlegislacao
           fields: get_descricao, tipo, ementa, get_arquivo
-          subsets: virgentes, revogadas
+          subsets:
+            virgentes:
+            revogadas:
         view:
           fieldsets:
             dados_gerais: numero ano, data tipo

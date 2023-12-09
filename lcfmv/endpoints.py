@@ -8,16 +8,16 @@ class AcessoRapido(endpoints.Endpoint):
     def get(self):
         boxes = Boxes(title='Acesso Rápido')
         if self.check_roles('adm'):
-            boxes.append(icon='users-line', label='Usuários', url='/api/v1/users/')
+            boxes.append(icon='users-line', label='Usuários', url='/api/users/')
         if self.check_roles('adm', 'opl'):
-            boxes.append(icon='list', label='Tipos de Legislação', url='/api/v1/tipolegislacao/')
+            boxes.append(icon='list', label='Tipos de Legislação', url='/api/tipolegislacao/')
         if self.check_roles('adm'):
-            boxes.append(icon='building', label='Conselhos', url='/api/v1/conselho/')
-            boxes.append(icon='users', label='Relatores', url='/api/v1/relator/')
+            boxes.append(icon='building', label='Conselhos', url='/api/conselho/')
+            boxes.append(icon='users', label='Relatores', url='/api/relator/')
         if self.check_roles('adm', 'opl'):
-            boxes.append(icon='file-contract', label='Legislações', url='/api/v1/legislacao/')
+            boxes.append(icon='file-contract', label='Legislações', url='/api/legislacao/')
         if self.check_roles('adm', 'opa'):
-            boxes.append(icon='file-signature', label='Acordãos', url='/api/v1/acordao/')
+            boxes.append(icon='file-signature', label='Acordãos', url='/api/acordao/')
         return boxes
 
     def check_permission(self):
